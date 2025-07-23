@@ -1,0 +1,78 @@
+# Cell State VAE Configuration
+project_name: "cell_state_vae"
+
+# Model Architecture
+model:
+  embedding_size: 512  # Dimension of input cell embeddings
+  global_latent_dim: 128  # Shared characteristics latent dimension
+  local_latent_dim: 64   # Neighborhood-specific variation latent dimension
+  hidden_dims: [256, 128]  # Hidden layer dimensions for encoders/decoder
+
+# KNN Graph Parameters
+knn:
+  k_values: [5, 10, 20]  # Multiple neighborhood sizes
+  distance_metric: "cosine"  # "cosine" or "euclidean"
+  gaussian_sigma: 1.0  # Gaussian weight parameter for distance weighting
+
+# Training Parameters
+training:
+  learning_rate: 1e-4
+  batch_size: 256
+  num_epochs: 100
+  beta1: 1.0  # Global KL divergence weight
+  beta2: 0.5  # Local KL divergence weight
+  bidirectional_training: true  # Alternate between forward/reverse modes
+  
+# Loss Configuration
+loss:
+  reconstruction_loss: "mse"  # "mse" or "l1"
+  kl_warmup_epochs: 10  # Gradually increase KL weights
+  
+# Data Parameters
+data:
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  shuffle: true
+  num_workers: 4
+
+# Generation Parameters
+generation:
+  n_samples: 100  # Number of samples to generate per seed
+  sample_diversity_threshold: 0.1  # Minimum diversity between samples
+
+# Optimization
+optimizer:
+  type: "adam"
+  weight_decay: 1e-5
+  betas: [0.9, 0.999]
+
+# Scheduler
+scheduler:
+  type: "cosine"  # "cosine", "step", or "none"
+  T_max: 100  # For cosine annealing
+
+# Logging and Checkpointing
+logging:
+  log_interval: 100  # Log every N steps
+  eval_interval: 1000  # Evaluate every N steps
+  save_interval: 5  # Save checkpoint every N epochs
+  log_images: true
+  log_model_graph: true
+
+# Paths
+paths:
+  data_dir: "data/"
+  checkpoint_dir: "checkpoints/"
+  output_dir: "outputs/"
+  log_dir: "logs/"
+
+# Hardware
+device: "cuda"  # "cuda" or "cpu"
+mixed_precision: true  # Use automatic mixed precision
+
+# Evaluation
+evaluation:
+  reconstruction_metrics: ["mse", "cosine_similarity"]
+  diversity_metrics: ["pairwise_distance", "coverage"]
+  coherence_metrics: ["neighborhood_preservation"]
